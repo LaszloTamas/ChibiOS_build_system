@@ -105,7 +105,7 @@ install_build_system ()
 		wget $TOOLCHAIN_WEB
 	fi
 	#tar -xvjf gcc-arm-none-eabi-4_7-2013q2-20130614-linux.tar.bz2 -C /opt
-	#tar -xvjf $TOOLCHAIN_SRC
+	#tar -xvjf $TOOLCHAIN_SRC -C /opt
 
 	# Configure ChibiOS ####################################
 	if [ -d "$PROJECT_PATH/ChibiOS" ]
