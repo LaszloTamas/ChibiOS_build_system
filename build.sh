@@ -89,12 +89,12 @@ configure_build_system ()
 # Install build system ########################################
 install_build_system ()
 {
-	echo "Install the build system."
-	# check user ###########################################
-	if [ `whoami` != "root" ]
+	# Configure ChibiOS ####################################
+	if [ -d "$PROJECT_PATH/ChibiOS" ]
 	    then
-		echo "Please login as root!"
-		#exit 1
+		echo "ChibiOS already downloaded!"
+	    else
+		git clone $CHIBIOS_WEB ./ChibiOS
 	fi
 
 	# Configure toolchain ###################################
@@ -104,16 +104,20 @@ install_build_system ()
 	    else
 		wget $TOOLCHAIN_WEB
 	fi
-	#tar -xvjf gcc-arm-none-eabi-4_7-2013q2-20130614-linux.tar.bz2 -C /opt
-	#tar -xvjf $TOOLCHAIN_SRC -C /opt
 
-	# Configure ChibiOS ####################################
-	if [ -d "$PROJECT_PATH/ChibiOS" ]
+	echo "Install the build system."
+	# check user ###########################################
+	if [ `whoami` != "root" ]
 	    then
-		echo "ChibiOS already downloaded!"
-	    else
-		git clone $CHIBIOS_WEB ./ChibiOS
+		echo "Please login as root!"
+		exit 1
 	fi
+
+	tar -xvjf $TOOLCHAIN_SRC -C /opt
+
+	cd /opt/gcc*/bin
+	for f in *; do ln -s /opt/gcc-arm-none*/bin/$f /usr/bin/$f ;done
+
 
 	echo "Install done."
 }
