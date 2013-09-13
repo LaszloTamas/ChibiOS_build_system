@@ -8,22 +8,23 @@
     |	+--README	- This file.
     |	+--build.sh	- Build system's shell scrypt file.
     +--projects/	- Projects directory (Build system create it).
-    +--build.conf	- Build system's configuraton file (Build system create it).
     +--build.sh		- Soft link to build system's scrypt file (Build system create it).
 
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 +++ How to use the build system						+++
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-1. Setting up the work space. See the files organization.
+1. Setting up the work space.
+    $mkdir workspace; cd workspace
 
-2. Create the build system environment configuration.
-    $./build.sh configure		- Follow the build system's steps.
+2. Download the ChibiOS build system.
+    $git clone https://github.com/LaszloTamas/ChibiOS_build_system.git
+    $cd ChibiOS_build_system
 
-3. Install build system.
+4. Install build system.
     $./build.sh install			- Follow the build system's steps.
 
-4. Create a new project
+5. Create a new project
     $./build.sh create			- Follow the build system's steps.
 
 
@@ -31,6 +32,9 @@
 +++ Releases								+++
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-+++ 1.0.0 +++
++++ 1.0.6 +++
+- NEW: simple environment configuration
+
++++ 1.0.5 +++
 - It works on current unstable ChibiOS-RT 2.7.0.
 - NEW: Added ST_STM32F4_DISCOVERY board template

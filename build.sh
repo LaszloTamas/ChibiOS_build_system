@@ -3,7 +3,6 @@
 TOOLCHAIN_WEB=https://launchpad.net/gcc-arm-embedded/4.7/4.7-2013-q2-update/+download/gcc-arm-none-eabi-4_7-2013q2-20130614-linux.tar.bz2
 TOOLCHAIN_SRC=gcc-arm-none-eabi-4_7-2013q2-20130614-linux.tar.bz2
 CHIBIOS_WEB=http://github.com/ChibiOS-Upstream/ChibiOS-RT.git
-CONFIG_FILE_NAME=build.conf
 
 BUILD_SYSTEM_PATH=$(readlink -e $0 | xargs dirname)
 cd $BUILD_SYSTEM_PATH
@@ -16,7 +15,6 @@ usage ()
     echo -e "
     usage: $0 <option-1>
     option(s):
-    \tconfigure : Configure the build system
     \tinstall : install toolchain and chibiOS
     \tcreate : create new project\n"
 }
@@ -53,8 +51,8 @@ create_new_project ()
     echo -e "\nCreate project done."
 }
 
-# Configure the build system ##################################
-configure_build_system ()
+# Install build system ########################################
+install_build_system ()
 {
 	# create symbol link ###################################
 	if [ ! -x "$PROJECT_PATH/build.sh" ]
@@ -62,73 +60,66 @@ configure_build_system ()
 		ln -s $BUILD_SYSTEM_PATH/build.sh $PROJECT_PATH/build.sh
 	fi
 
-	# build.conf
-	if [ -s "$PROJECT_PATH/$CONFIG_FILE_NAME" ]
-	    then
-		echo "This file already exist!"
-	    else
-		echo -e  "#########################################"	>> $CONFIG_FILE_NAME
-		echo -e  "Build system config file for ChibiOS" 	>> $CONFIG_FILE_NAME
-		echo -e  "########################################\n" 	>> $CONFIG_FILE_NAME
-		echo -e  "# download ChibiOS" 				>> $CONFIG_FILE_NAME
-		echo -e  "CHIBIOS = y\n"				>> $CONFIG_FILE_NAME
-		echo -e  "# automatic update for chibiOS"		>> $CONFIG_FILE_NAME
-		echo -e  "UPDATE_CHIBI = n\n" 				>> $CONFIG_FILE_NAME
-		echo -e  "# download toolchain" 			>> $CONFIG_FILE_NAME
-		echo -e  "TOOLCHAIN = n\n" 				>> $CONFIG_FILE_NAME
-		echo -e  "# install toolchain" 				>> $CONFIG_FILE_NAME
-		echo -e  "TOOLCHAIN_INSTALL = n\n" 			>> $CONFIG_FILE_NAME
-		echo -e  "# download ST-UTIL" 				>> $CONFIG_FILE_NAME
-		echo -e  "ST_UTIL = n\n"				>> $CONFIG_FILE_NAME
-		echo -e  "# default board template"			>> $CONFIG_FILE_NAME
-		echo -e  "TEMPLATE = ST_STM32F4_DISCOVERY\n"		>> $CONFIG_FILE_NAME
+	echo "Download ChibiOS [Y/n]?"
+	read CH
+
+	if [ -z "$CH" ]
+	then
+		CH="Y"
 	fi
 
-}
+	echo "Install toolchain [Y/n]?"
+	read TC
 
-# Install build system ########################################
-install_build_system ()
-{
-	# Configure ChibiOS ####################################
-	if [ -d "$PROJECT_PATH/ChibiOS" ]
-	    then
-		echo "ChibiOS already downloaded!"
-	    else
-		git clone $CHIBIOS_WEB ./ChibiOS
+	if [ -z "$TC" ]
+	then
+		TC="Y"
 	fi
 
-	# Configure toolchain ###################################
-	if [ -s "$PROJECT_PATH/$TOOLCHAIN_SRC" ]
-	    then
-		echo "Toolchain already downloaded!"
-	    else
-		wget $TOOLCHAIN_WEB
-	fi
-
-	echo "Install the build system."
-	# check user ###########################################
-	if [ `whoami` != "root" ]
-	    then
+	if [ $TC == "Y" ] && [ `whoami` != "root" ]
+	then
 		echo "Please login as root!"
 		exit 1
 	fi
 
-	tar -xvjf $TOOLCHAIN_SRC -C /opt
+	# Configure ChibiOS ####################################
+	if [ $CH == "Y" ]
+	then
+	    if [ -d "$PROJECT_PATH/ChibiOS" ]
+	    then
+		echo "ChibiOS already downloaded!"
+	    else
+		git clone $CHIBIOS_WEB ./ChibiOS
+	    fi
+	fi
 
-	cd /opt/gcc*/bin
-	for f in *; do ln -s /opt/gcc-arm-none*/bin/$f /usr/bin/$f ;done
+	# Configure toolchain ###################################
+	if [ $TC == "Y" ]
+	then
+	    if [ `arm-none-eabi-gcc --version &> /dev/null && echo "OK" || echo "FAIL"` == "OK" ]
+	    then
+		echo "Toolchain works!"
+	    else
+		if [ -s "$PROJECT_PATH/$TOOLCHAIN_SRC" ]
+		then
+		    echo "Toolchain already downloaded!"
+		else
+		    wget $TOOLCHAIN_WEB
+		fi
 
+		tar -xvjf $TOOLCHAIN_SRC -C /opt
+		cd /opt/gcc*/bin
+		for f in *; do ln -s /opt/gcc-arm-none*/bin/$f /usr/bin/$f ;done
+	    fi
+	fi
 
-	echo "Install done."
+	echo "Install done!"
 }
 
 #################################################################
 # main ##########################################################
 #################################################################
 case $1 in
-    "configure")
-	configure_build_system
-	;;
     "install")
 	install_build_system
 	;;
