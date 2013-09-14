@@ -38,15 +38,37 @@ create_new_project ()
 	    exit 1
     fi
 
+
+    echo -e "
+Choose project template:
+ST_STM32F4_DISCOVERY\t[1]
+ST_STM32L_DISCOVERY\t[2]"
+
+    read PROJECT_TEMPLATE
+
+    if [ -z "$PROJECT_TEMPLATE" ]
+    then
+	PROJECT_TEMPLATE="1"
+    fi
+
+    case $PROJECT_TEMPLATE in
+	1) PROJECT_TEMPLATE_DIR="ST_STM32F4_DISCOVERY" ;;
+	2) PROJECT_TEMPLATE_DIR="ST_STM32L_DISCOVERY"  ;;
+	*) echo "INVALID NUMBER!"
+	    exit 1 ;;
+    esac
+
     mkdir -p $PROJECT_PATH/projects/${PROJECT_NAME}
 
-    cp $BUILD_SYSTEM_PATH/templates/chconf.h $PROJECT_PATH/projects/$PROJECT_NAME/chconf.h
-    cp $BUILD_SYSTEM_PATH/templates/main.c $PROJECT_PATH/projects/$PROJECT_NAME/main.c
-    cp $BUILD_SYSTEM_PATH/templates/halconf.h $PROJECT_PATH/projects/$PROJECT_NAME/halconf.h
-    cp $BUILD_SYSTEM_PATH/templates/mcuconf.h $PROJECT_PATH/projects/$PROJECT_NAME/mcuconf.h
+    cp $BUILD_SYSTEM_PATH/templates/$PROJECT_TEMPLATE_DIR/chconf.h $PROJECT_PATH/projects/$PROJECT_NAME/chconf.h
+    cp $BUILD_SYSTEM_PATH/templates/$PROJECT_TEMPLATE_DIR/main.c $PROJECT_PATH/projects/$PROJECT_NAME/main.c
+    cp $BUILD_SYSTEM_PATH/templates/$PROJECT_TEMPLATE_DIR/halconf.h $PROJECT_PATH/projects/$PROJECT_NAME/halconf.h
+    cp $BUILD_SYSTEM_PATH/templates/$PROJECT_TEMPLATE_DIR/mcuconf.h $PROJECT_PATH/projects/$PROJECT_NAME/mcuconf.h
+    cp $BUILD_SYSTEM_PATH/templates/$PROJECT_TEMPLATE_DIR/board.c $PROJECT_PATH/projects/$PROJECT_NAME/board.c
+    cp $BUILD_SYSTEM_PATH/templates/$PROJECT_TEMPLATE_DIR/board.h $PROJECT_PATH/projects/$PROJECT_NAME/board.h
 
-    cat $BUILD_SYSTEM_PATH/templates/template.cbp | sed -e "s/PROJECT_NAME/${PROJECT_NAME}/g"  > $PROJECT_PATH/projects/$PROJECT_NAME/$PROJECT_NAME.cbp
-    cat $BUILD_SYSTEM_PATH/templates/Makefile | sed -e "s/PROJECT_NAME/${PROJECT_NAME}/g" > $PROJECT_PATH/projects/$PROJECT_NAME/Makefile
+    cat $BUILD_SYSTEM_PATH/templates/$PROJECT_TEMPLATE_DIR/template.cbp | sed -e "s/PROJECT_NAME/${PROJECT_NAME}/g"  > $PROJECT_PATH/projects/$PROJECT_NAME/$PROJECT_NAME.cbp
+    cat $BUILD_SYSTEM_PATH/templates/$PROJECT_TEMPLATE_DIR/Makefile | sed -e "s/PROJECT_NAME/${PROJECT_NAME}/g" > $PROJECT_PATH/projects/$PROJECT_NAME/Makefile
 
     echo -e "\nCreate project done."
 }

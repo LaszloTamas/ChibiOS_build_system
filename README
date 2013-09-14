@@ -32,6 +32,9 @@
 +++ Releases								+++
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
++++ 1.0.7 +++
+- NEW: Added ST_STM32L_DISCOVERY board template
+
 +++ 1.0.6 +++
 - NEW: simple environment configuration
 

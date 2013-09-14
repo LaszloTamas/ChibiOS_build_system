@@ -5,7 +5,7 @@
 
 # Compiler options here.
 ifeq ($(USE_OPT),)
-  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16
+  USE_OPT = -O2 -ggdb -fomit-frame-pointer
 endif
 
 # C specific options here (added to USE_OPT).
@@ -41,12 +41,6 @@ endif
 # Architecture or project specific options
 #
 
-# Enables the use of FPU on Cortex-M4.
-# Enable this if you really want to use the STM FWLib.
-ifeq ($(USE_FPU),)
-  USE_FPU = no
-endif
-
 # Enable this if you really want to use the STM FWLib.
 ifeq ($(USE_FWLIB),)
   USE_FWLIB = no
@@ -65,16 +59,15 @@ PROJECT = PROJECT_NAME
 
 # Imported source files and paths
 CHIBIOS = ../../ChibiOS
-include $(CHIBIOS)/boards/ST_STM32F4_DISCOVERY/board.mk
-include $(CHIBIOS)/os/hal/platforms/STM32F4xx/platform.mk
+##include $(CHIBIOS)/boards/ST_STM32L_DISCOVERY/board.mk
+include $(CHIBIOS)/os/hal/platforms/STM32L1xx/platform.mk
 include $(CHIBIOS)/os/hal/hal.mk
-include $(CHIBIOS)/os/ports/GCC/ARMCMx/STM32F4xx/port.mk
+include $(CHIBIOS)/os/ports/GCC/ARMCMx/STM32L1xx/port.mk
 include $(CHIBIOS)/os/kernel/kernel.mk
 include $(CHIBIOS)/test/test.mk
 
 # Define linker script file here
-LDSCRIPT= $(PORTLD)/STM32F407xG.ld
-#LDSCRIPT= $(PORTLD)/STM32F407xG_CCM.ld
+LDSCRIPT= $(PORTLD)/STM32L152xB.ld
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
@@ -85,8 +78,8 @@ CSRC = $(PORTSRC) \
        $(HALSRC) \
        $(PLATFORMSRC) \
        $(BOARDSRC) \
-       $(CHIBIOS)/os/various/devices_lib/accel/lis302dl.c \
-       $(CHIBIOS)/os/various/chprintf.c \
+       $(CHIBIOS)/os/various/evtimer.c \
+       $(CHIBIOS)/os/various/syscalls.c \
        $(PROJECT_SRC)
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
@@ -118,7 +111,6 @@ ASMSRC = $(PORTASM)
 
 INCDIR = $(PORTINC) $(KERNINC) $(TESTINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) \
-         $(CHIBIOS)/os/various/devices_lib/accel \
          $(CHIBIOS)/os/various
 
 #
@@ -129,7 +121,7 @@ INCDIR = $(PORTINC) $(KERNINC) $(TESTINC) \
 # Compiler settings
 #
 
-MCU  = cortex-m4
+MCU  = cortex-m3
 
 #TRGT = arm-elf-
 TRGT = arm-none-eabi-
@@ -208,13 +200,6 @@ ULIBS =
 # End of user defines
 ##############################################################################
 
-ifeq ($(USE_FPU),yes)
-  USE_OPT += -mfloat-abi=softfp -mfpu=fpv4-sp-d16 -fsingle-precision-constant
-  DDEFS += -DCORTEX_USE_FPU=TRUE
-else
-  DDEFS += -DCORTEX_USE_FPU=FALSE
-endif
-
 ifeq ($(USE_FWLIB),yes)
   include $(CHIBIOS)/ext/stm32lib/stm32lib.mk
   CSRC += $(STM32SRC)
@@ -228,8 +213,7 @@ Debug:all
 
 Release:all
 
-Debugclean:clean
+cleanDebug:clean
 
-Releaseclean:clean
-
+cleanRelease:clean
 

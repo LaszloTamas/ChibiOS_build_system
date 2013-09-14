@@ -38,6 +38,8 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="mcuconf.h" />
+		<Unit filename="board.h" />
+		<Unit filename="board.c" />
 		<Extensions>
 			<code_completion />
 			<debugger />
