@@ -98,14 +98,17 @@ install_build_system ()
 		TC="Y"
 	fi
 
-	if [ $TC == "Y" ] && [ `whoami` != "root" ]
+	if [[ $TC == "Y" || $TC == "y" ]]
 	then
+	    if [ `whoami` != "root" ]
+	    then
 		echo "Please login as root!"
 		exit 1
+	    fi
 	fi
 
 	# Configure ChibiOS ####################################
-	if [ $CH == "Y" ]
+	if [[ $CH == "Y" || $CH == "y" ]]
 	then
 	    if [ -d "$PROJECT_PATH/ChibiOS" ]
 	    then
@@ -116,7 +119,7 @@ install_build_system ()
 	fi
 
 	# Configure toolchain ###################################
-	if [ $TC == "Y" ]
+	if [[ $TC == "Y" || $TC == "y" ]]
 	then
 	    if [ `arm-none-eabi-gcc --version &> /dev/null && echo "OK" || echo "FAIL"` == "OK" ]
 	    then
